@@ -2,7 +2,7 @@ import connection from "../database/database.js";
 import dayjs from "dayjs";
 
 async function listRentals(req, res) {
-  const { customerId, gameId, status, startDate } = req.query;
+  const { customerId, gameId, status, startDate, order, desc } = req.query;
 
   let filters = "";
   let filterParams = [];
@@ -36,6 +36,10 @@ async function listRentals(req, res) {
       filters === "" ? "WHERE" : "AND"
     }  "rentDate" >= $${filterQtd} `;
     filterParams.push(startDate);
+  }
+
+  if (order) {
+    filters += `ORDER BY "${order}" ${desc ? "DESC " : ""}`;
   }
 
   try {
