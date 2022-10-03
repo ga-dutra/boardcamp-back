@@ -111,7 +111,7 @@ async function closeRental(req, res) {
       'UPDATE rentals SET "returnDate" = $1, "delayFee" = $2 WHERE id = $3',
       [returnDate, delayFee, id]
     );
-    res.status(200).send({ message: "Rental successfully returned" });
+    return res.status(200).send({ message: "Rental successfully returned" });
   } catch (error) {
     return res.status(500).send(error.message);
   }
