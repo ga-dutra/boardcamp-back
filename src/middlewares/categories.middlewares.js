@@ -9,7 +9,9 @@ async function validateCategories(req, res, next) {
   });
 
   if (categoryValidation.error) {
-    const errors = validation.error.details.map((details) => details.message);
+    const errors = categoryValidation.error.details.map(
+      (details) => details.message
+    );
     res.status(400).send(errors);
   }
 

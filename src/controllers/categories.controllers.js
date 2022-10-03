@@ -9,7 +9,7 @@ async function listCategories(req, res) {
   }
 }
 
-async function postCategories(req, res) {
+async function createCategories(req, res) {
   const categoryName = req.body.name;
 
   try {
@@ -22,4 +22,4 @@ async function postCategories(req, res) {
   }
 }
 
-export { listCategories, postCategories };
+export { listCategories, createCategories };
