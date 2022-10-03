@@ -19,8 +19,10 @@ async function validateCustomer(req, res, next) {
 
   try {
     const existingCustomer = await connection.query(
-      "SELECT * FROM customers WHERE cpf = $1",
-      [cpf]
+      `SELECT * FROM customers WHERE cpf = $1 ${
+        customerId ? "AND id = $2" : ""
+      }`,
+      customerId ? [cpf, customerId] : [cpf]
     );
 
     if (existingCustomer.rowCount !== 0 && !customerId) {
