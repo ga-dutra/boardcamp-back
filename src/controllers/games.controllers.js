@@ -1,8 +1,11 @@
 import connection from "../database/database.js";
 
 async function listGames(req, res) {
-  const { name, order, desc } = req.query;
+  const { name, order, desc, limit, offset } = req.query;
+
   let filters = "";
+  let filterParams = [];
+  let filterQtd = 0;
 
   if (name) {
     filters = `WHERE LOWER (games.name) LIKE LOWER ('${name}%')`;
@@ -12,11 +15,22 @@ async function listGames(req, res) {
     filters += `ORDER BY "${order}" ${desc ? "DESC " : ""}`;
   }
 
+  if (limit) {
+    filterQtd++;
+    filters += `LIMIT $${filterQtd} `;
+    filterParams.push(limit);
+  }
+
+  if (offset) {
+    filterQtd++;
+    filters += `OFFSET $${filterQtd}`;
+    filterParams.push(offset);
+  }
+
   try {
     const gamesQuery = await connection.query(
-      `SELECT games.*, categories.name as "categoryName" FROM GAMES JOIN categories ON games."categoryId" = categories.id ${
-        filters !== "" ? filters : ""
-      };`
+      `SELECT games.*, categories.name as "categoryName" FROM GAMES JOIN categories ON games."categoryId" = categories.id ${filters};`,
+      filterParams
     );
     return res.status(200).send(gamesQuery.rows);
   } catch (error) {

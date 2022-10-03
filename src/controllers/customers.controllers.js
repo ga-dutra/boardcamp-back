@@ -1,20 +1,39 @@
 import connection from "../database/database.js";
 
 async function listCustomers(req, res) {
-  const { cpf, order, desc } = req.query;
+  const { cpf, order, desc, limit, offset } = req.query;
   let filters = "";
+  let filterParams = [];
+  let filterQtd = 0;
 
   if (cpf) {
-    filters = `WHERE cpf LIKE ('${cpf}%')`;
+    filterQtd++;
+    filters += `WHERE cpf LIKE $${filterQtd}`;
+    filterParams.push(`${cpf}%`);
   }
 
   if (order) {
     filters += `ORDER BY "${order}" ${desc ? "DESC " : ""}`;
   }
 
+  if (limit) {
+    filterQtd++;
+    filters += `LIMIT $${filterQtd} `;
+    filterParams.push(limit);
+  }
+
+  if (offset) {
+    filterQtd++;
+    filters += `OFFSET $${filterQtd}`;
+    filterParams.push(offset);
+  }
+
   try {
-    const customers = await connection.query(`
-      SELECT * FROM customers ${filters !== "" ? filters : ""};`);
+    const customers = await connection.query(
+      `
+      SELECT * FROM customers ${filters};`,
+      filterParams
+    );
     return res.status(200).send(customers.rows);
   } catch (error) {
     return res.status(500).send(error.message);

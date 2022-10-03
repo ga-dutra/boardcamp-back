@@ -1,17 +1,32 @@
 import connection from "../database/database.js";
 
 async function listCategories(req, res) {
-  const { order, desc } = req.query;
+  const { order, desc, limit, offset } = req.query;
 
   let filters = "";
+  let filterParams = [];
+  let filterQtd = 0;
 
   if (order) {
     filters += `ORDER BY "${order}" ${desc ? "DESC " : ""}`;
   }
 
+  if (limit) {
+    filterQtd++;
+    filters += `LIMIT $${filterQtd} `;
+    filterParams.push(limit);
+  }
+
+  if (offset) {
+    filterQtd++;
+    filters += `OFFSET $${filterQtd}`;
+    filterParams.push(offset);
+  }
+
   try {
     const categoriesQuery = await connection.query(
-      `SELECT * from categories ${filters !== "" ? filters : ""};`
+      `SELECT * from categories ${filters};`,
+      filterParams
     );
     return res.status(200).send(categoriesQuery.rows);
   } catch (error) {
