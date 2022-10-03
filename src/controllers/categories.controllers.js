@@ -1,8 +1,18 @@
 import connection from "../database/database.js";
 
 async function listCategories(req, res) {
+  const { order, desc } = req.query;
+
+  let filters = "";
+
+  if (order) {
+    filters += `ORDER BY "${order}" ${desc ? "DESC " : ""}`;
+  }
+
   try {
-    const categoriesQuery = await connection.query(`SELECT * from categories`);
+    const categoriesQuery = await connection.query(
+      `SELECT * from categories ${filters !== "" ? filters : ""};`
+    );
     return res.status(200).send(categoriesQuery.rows);
   } catch (error) {
     return res.status(500).send(error.message);

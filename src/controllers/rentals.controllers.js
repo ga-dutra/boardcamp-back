@@ -2,15 +2,23 @@ import connection from "../database/database.js";
 import dayjs from "dayjs";
 
 async function listRentals(req, res) {
-  const { customerId, gameId } = req.query;
+  const { customerId, gameId, status, startDate, order, desc } = req.query;
 
   let filters = "";
   let filterParams = [];
   let filterQtd = 0;
 
+  if (status === "closed" || status === "open") {
+    filters += `WHERE "returnDate" ${
+      status === "closed" ? "IS NOT NULL" : "IS NULL"
+    } `;
+  }
+
   if (customerId) {
     filterQtd++;
-    filters += `WHERE "customerId" = $${filterQtd} `;
+    filters += `${
+      filterParams.length === 0 ? "WHERE" : "AND"
+    } "customerId" = $${filterQtd} `;
     filterParams.push(customerId);
   }
 
@@ -20,6 +28,18 @@ async function listRentals(req, res) {
       filterParams.length === 0 ? "WHERE" : "AND"
     } "gameId" = $${filterQtd} `;
     filterParams.push(gameId);
+  }
+
+  if (startDate) {
+    filterQtd++;
+    filters += `${
+      filters === "" ? "WHERE" : "AND"
+    }  "rentDate" >= $${filterQtd} `;
+    filterParams.push(startDate);
+  }
+
+  if (order) {
+    filters += `ORDER BY "${order}" ${desc ? "DESC " : ""}`;
   }
 
   try {
