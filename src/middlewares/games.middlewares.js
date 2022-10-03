@@ -10,7 +10,7 @@ async function validateGames(req, res, next) {
     const errors = gameValidation.error.details.map(
       (details) => details.message
     );
-    res.status(400).send(errors);
+    return res.status(400).send(errors);
   }
 
   try {

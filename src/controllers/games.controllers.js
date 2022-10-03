@@ -6,7 +6,6 @@ async function listGames(req, res) {
 
   if (name) {
     filter = `WHERE LOWER (games.name) LIKE LOWER ('${name}%')`;
-    console.log(filter);
   }
 
   try {
@@ -15,7 +14,7 @@ async function listGames(req, res) {
         filter !== "" ? filter : ""
       };`
     );
-    res.status(200).send(gamesQuery.rows);
+    return res.status(200).send(gamesQuery.rows);
   } catch (error) {
     return res.status(500).send(error.message);
   }
@@ -29,7 +28,7 @@ async function createGames(req, res) {
       'INSERT INTO games (name, image, "stockTotal", "categoryId", "pricePerDay") VALUES ($1, $2, $3, $4, $5)',
       [name, image, stockTotal, categoryId, pricePerDay]
     );
-    res.sendStatus(201);
+    return res.status(201).send({ message: "Game created!" });
   } catch (error) {
     return res.status(500).send(error.message);
   }

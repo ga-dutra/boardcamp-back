@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 import categoriesRouter from "./routes/categories.router.js";
 import gamesRouter from "./routes/games.router.js";
+import customersRouter from "./routes/customers.router.js";
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 
 app.use("/categories", categoriesRouter);
 app.use("/games", gamesRouter);
+app.use("/customers", customersRouter);
 
 const PORT = process.env.PORT || 4000;
 
